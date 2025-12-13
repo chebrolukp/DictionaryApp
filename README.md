@@ -25,3 +25,13 @@ Android dictionary app built with Kotlin and Jetpack Compose.
 ## Notes
 - Uses dictionaryapi.dev
 - Designed for interview and learning purposes
+
+## Screenshots
+
+## Screenshots
+
+<p float="left">
+  <img src="screenshots/home.png" width="300"/>
+  <img src="screenshots/history.png" width="300"/>
+</p>
+
