@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Dictionary</string>
+    <string name="search">Search</string>
+    <string name="label_example">Example: %1$s</string>
+    <string name="label_play_audio">Play Audio</string>
+    <string name="home">Home</string>
+    <string name="history">History</string>
+
+
+    <!-- Error Messages -->
+    <string name="error_no_internet">No internet connection. Showing cached results.</string>
+    <string name="error_word_not_found">Word not found. Try a different search.</string>
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_timeout">Request timed out. Please try again.</string>
+    <string name="error_unknown">An error occurred</string>
+    <string name="error_empty_query">Search query cannot be empty</string>
+</resources>
