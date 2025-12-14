@@ -12,7 +12,7 @@ Android dictionary app built with Kotlin and Jetpack Compose.
 ## Tech Stack
 - Kotlin
 - Jetpack Compose
-- Exoplayer(Media3)
+- ExoPlayer (Jetpack Media3)
 - MVVM+clean arch
 - Coroutines + Flow
 - Hilt
@@ -29,8 +29,6 @@ Android dictionary app built with Kotlin and Jetpack Compose.
 
 ## Screenshots
 
-<p float="left">
-  <img src="screenshots/home.png" width="300"/>
-  <img src="screenshots/history.png" width="300"/>
-</p>
+<img src="screenshots/home.png" width="300" />&nbsp;&nbsp;
+<img src="screenshots/history.png" width="300" />
 
