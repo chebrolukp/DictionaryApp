@@ -64,7 +64,7 @@ class WordInfoViewModelTest {
             flowOf(Resource.Success(emptyList()))
         )
 
-        viewModel.onSearch(query)
+        viewModel.onSearchClick(query)
 
         // Advance less than debounce
         advanceTimeBy(300)
@@ -84,7 +84,7 @@ class WordInfoViewModelTest {
             flowOf(Resource.Success(resultItems))
         )
 
-        viewModel.onSearch(query)
+        viewModel.onSearchClick(query)
 
         // Run debounce + completion
         advanceUntilIdle()
@@ -107,7 +107,7 @@ class WordInfoViewModelTest {
         )
 
         viewModel.eventFlow.test {
-            viewModel.onSearch(query)
+            viewModel.onSearchClick(query)
             advanceUntilIdle()
 
             val event = awaitItem()
@@ -124,7 +124,7 @@ class WordInfoViewModelTest {
             flowOf(Resource.Success(emptyList()))
         )
 
-        viewModel.onSearch(query)
+        viewModel.onSearchClick(query)
 
         // Debounce + success happens fast
         advanceTimeBy(600)
@@ -150,10 +150,10 @@ class WordInfoViewModelTest {
             }
         )
 
-        viewModel.onSearch(query1)
+        viewModel.onSearchClick(query1)
         advanceTimeBy(100)
 
-        viewModel.onSearch(query2)
+        viewModel.onSearchClick(query2)
         advanceUntilIdle()
 
         // First should be cancelled, second should run

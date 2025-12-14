@@ -14,10 +14,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
@@ -57,7 +59,6 @@ import com.example.dictionary.presentation.WordInfoViewModel
 import com.example.dictionary.presentation.navigation.Screen
 import com.example.dictionary.ui.theme.DictionaryTheme
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -218,16 +219,22 @@ fun WordInfoScreen(
                 placeholder = {
                     Text(stringResource(R.string.search))
                 },
+                trailingIcon = {
+                    IconButton(onClick = { viewModel.onSearchClick() }) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(R.string.search)
+                        )
+                    }
+                },
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Blue,
                     unfocusedBorderColor = Color.Blue,
                 )
             )
-            Timber.tag("krishna").i("state - ${state.isLoading}, ${state.wordInfoItems}")
             if (!state.isLoading && state.wordInfoItems.isNotEmpty()) {
                 // Display word info
-                Timber.tag("krishna").i("wordInfoItems: ${state.wordInfoItems}")
                 LazyColumn {
                     items(state.wordInfoItems.size) { index ->
                         WordInfoItem(state.wordInfoItems[index], modifier = Modifier.padding(16.dp),

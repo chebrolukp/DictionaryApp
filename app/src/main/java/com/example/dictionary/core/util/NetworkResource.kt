@@ -29,7 +29,7 @@ fun <T, R> safeNetworkCall(
 
         if (emptyNetworkCheck(remote)) {
             Timber.tag(TAG).d("Remote returned empty result")
-            emit(Resource.Error(data = cached, exception = DictionaryException.WordNotFoundException))
+            emit(Resource.Error(data = fallbackValue, exception = DictionaryException.WordNotFoundException))
             return@flow
         }
 
@@ -45,9 +45,11 @@ fun <T, R> safeNetworkCall(
     } catch (e: SocketTimeoutException) {
         Timber.tag(TAG).d("Timeout: ${e.message}")
         emit(Resource.Error(data = cached, exception = DictionaryException.NetworkException))
-    } catch (e: HttpException) {
+    } catch (e: HttpException) {//400, 401, 403, 404, 500
+        val exception = if(e.code() == 404) DictionaryException.WordNotFoundException else DictionaryException.ServerException
+        val fallback = if(e.code() == 404) fallbackValue else cached
         Timber.tag(TAG).d("HTTP error: ${e.message}")
-        emit(Resource.Error(data = cached, exception = DictionaryException.ServerException))
+        emit(Resource.Error(data = fallback, exception = exception))
     } catch (e: IOException) {
         Timber.tag(TAG).d("IO Error: ${e.message}")
         emit(Resource.Error(data = cached, exception = DictionaryException.NetworkException))

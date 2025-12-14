@@ -46,8 +46,11 @@ class WordInfoViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
-    fun onSearch(query: String) {
+    fun onSearch(query: String){
         _searchQuery.value = query
+    }
+
+    fun onSearchClick(query: String = _searchQuery.value) {
         performSearch(query)
     }
 

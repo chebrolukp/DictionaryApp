@@ -12,7 +12,7 @@ class GetWordInfoUsecase(
     operator fun invoke(word:String): Flow<Resource<List<WordInfo>>>{
         val trimmedWord = word.trim()
         if(trimmedWord.isBlank()){
-            return flow{}
+            return flow{emit(Resource.Success(emptyList()))}
         }
 
         return repository.getWordInfo(trimmedWord)
