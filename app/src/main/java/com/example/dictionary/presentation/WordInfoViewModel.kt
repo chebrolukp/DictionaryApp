@@ -58,9 +58,7 @@ class WordInfoViewModel @Inject constructor(
 
 
     private fun performSearch(query: String, debounce: Boolean = true) {
-        val trimmedQuery = query.trim()
-        if(trimmedQuery.isBlank()) return
-        _searchQuery.value = trimmedQuery
+        _searchQuery.value = query
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             _state.value = state.value.copy(isLoading = true)
@@ -69,7 +67,7 @@ class WordInfoViewModel @Inject constructor(
                 delay(MIN_LOADING_TIME)
             }
             if(debounce) delay(DEBOUNCE_DELAY)
-            getWordInfoUsecase(trimmedQuery).collect { result ->
+            getWordInfoUsecase(query).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         _state.value = _state.value.copy(
