@@ -1,6 +1,6 @@
 # Dictionary App
 
-Android dictionary app built with Kotlin and Jetpack Compose.
+Simple android dictionary app built with Kotlin and Jetpack Compose.
 
 ## Features
 - Search English words
@@ -25,7 +25,6 @@ Android dictionary app built with Kotlin and Jetpack Compose.
 
 ## Notes
 - Uses dictionaryapi.dev
-- Designed for interview and learning purposes
 
 ## Screenshots
 
