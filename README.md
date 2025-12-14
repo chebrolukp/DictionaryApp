@@ -6,6 +6,7 @@ Android dictionary app built with Kotlin and Jetpack Compose.
 - Search English words
 - Audio pronunciation using ExoPlayer
 - Search history
+- Clicking a word in search history automatically re-runs the search
 - Offline cache using Room
 
 ## Tech Stack
@@ -25,8 +26,6 @@ Android dictionary app built with Kotlin and Jetpack Compose.
 ## Notes
 - Uses dictionaryapi.dev
 - Designed for interview and learning purposes
-
-## Screenshots
 
 ## Screenshots
 
