@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WordInfoViewModel @Inject constructor(
     private val getWordInfoUsecase: GetWordInfoUsecase,
-    private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
+    getSearchHistoryUseCase: GetSearchHistoryUseCase,
     private val application: Application
 ) : ViewModel() {
     private val _searchQuery = mutableStateOf("")

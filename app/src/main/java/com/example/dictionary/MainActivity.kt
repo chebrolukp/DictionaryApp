@@ -57,6 +57,7 @@ import com.example.dictionary.presentation.HistoryScreen
 import com.example.dictionary.presentation.WordInfoItem
 import com.example.dictionary.presentation.WordInfoViewModel
 import com.example.dictionary.presentation.navigation.Screen
+import com.example.dictionary.presentation.preview.MultiPreview
 import com.example.dictionary.ui.theme.DictionaryTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -248,23 +249,8 @@ fun WordInfoScreen(
     }
 }
 
-//@MultiPreview
-//@Composable
-//fun GreetingPreview() {
-//    DictionaryTheme {
-//        WordInfoScreen(
-//            Modifier, WordInfoState(
-//                wordInfoItems = listOf(
-//                    WordInfo(
-//                        "bank",
-//                        "bank",
-//                        listOf(Phonetic("text", "audio")),
-//                        emptyList(),
-//                        License("a", ""),
-//                        listOf("a", "b", "c")
-//                    )
-//                )
-//            )
-//        )
-//    }
-//}
+@MultiPreview
+@Composable
+fun DictionaryTitlePreview(){
+    DictionaryTitle()
+}
