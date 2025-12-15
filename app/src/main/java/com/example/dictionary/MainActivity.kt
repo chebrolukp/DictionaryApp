@@ -48,12 +48,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.dictionary.presentation.viewmodel.AudioPlayerViewModel
 import com.example.dictionary.presentation.HistoryScreen
+import com.example.dictionary.presentation.WordDetailsScreen
 import com.example.dictionary.presentation.WordInfoItem
 import com.example.dictionary.presentation.viewmodel.WordInfoViewModel
 import com.example.dictionary.presentation.navigation.Screen
@@ -104,26 +107,30 @@ class MainActivity : ComponentActivity() {
                 SnackbarHost(snackBarHostState)
             },
             bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = currentRoute == Screen.Home.route,
-                        onClick = {
-                            navController.navigate(Screen.Home.route) {
-                                launchSingleTop = true
-                            }
-                        },
-                        icon = { Icon(Icons.Default.Home, null) },
-                        label = { Text(stringResource(R.string.home)) }
-                    )
+                if (currentRoute == Screen.Home.route ||
+                    currentRoute == Screen.History.route
+                ) {
+                    NavigationBar {
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.Home.route,
+                            onClick = {
+                                navController.navigate(Screen.Home.route) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            icon = { Icon(Icons.Default.Home, null) },
+                            label = { Text(stringResource(R.string.home)) }
+                        )
 
-                    NavigationBarItem(
-                        selected = currentRoute == Screen.History.route,
-                        onClick = {
-                            navController.navigate(Screen.History.route)
-                        },
-                        icon = { Icon(Icons.Default.History, null) },
-                        label = { Text(stringResource(R.string.history)) }
-                    )
+                        NavigationBarItem(
+                            selected = currentRoute == Screen.History.route,
+                            onClick = {
+                                navController.navigate(Screen.History.route)
+                            },
+                            icon = { Icon(Icons.Default.History, null) },
+                            label = { Text(stringResource(R.string.history)) }
+                        )
+                    }
                 }
             }) { innerPadding ->
             NavHost(
@@ -145,8 +152,20 @@ class MainActivity : ComponentActivity() {
                             navController.navigate(Screen.Home.route) {
                                 launchSingleTop = true
                             }
+                        },
+                        onLocalClick = { word ->
+                            navController.navigate(Screen.WordDetails.create(word)){
+                                launchSingleTop = true
+                            }
                         }
                     )
+                }
+                composable(
+                    route = Screen.WordDetails.route,
+                    arguments = listOf(navArgument("word") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val word = backStackEntry.arguments?.getString("word") ?: return@composable
+                    WordDetailsScreen(word)
                 }
             }
         }
@@ -251,6 +270,6 @@ fun WordInfoScreen(
 
 @MultiPreview
 @Composable
-fun DictionaryTitlePreview(){
+fun DictionaryTitlePreview() {
     DictionaryTitle()
 }

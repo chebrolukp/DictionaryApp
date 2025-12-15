@@ -6,6 +6,7 @@ import com.example.dictionary.core.util.Resource
 import com.example.dictionary.core.util.safeNetworkCall
 import com.example.dictionary.data.local.WordInfoDao
 import com.example.dictionary.data.remote.DictionaryApi
+import com.example.dictionary.domain.model.WordInfo
 import com.example.dictionary.domain.repository.WordInfoRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onStart
@@ -48,4 +49,8 @@ class WordInfoRepositoryImpl(
             .catch {
                 emit(Resource.Error(exception = DictionaryException.UnknownException))
             }
+
+    override suspend fun getLocalWordInfo(word: String): List<WordInfo>{
+        return dao.getWordInfo(word).map { it.toWordInfo() }
+    }
 }
