@@ -1,4 +1,4 @@
-package com.example.dictionary.presentation
+package com.example.dictionary.presentation.viewmodel
 
 import android.app.Application
 import androidx.compose.runtime.State
@@ -10,6 +10,7 @@ import com.example.dictionary.core.util.DictionaryException
 import com.example.dictionary.core.util.Resource
 import com.example.dictionary.domain.usecase.GetSearchHistoryUseCase
 import com.example.dictionary.domain.usecase.GetWordInfoUsecase
+import com.example.dictionary.presentation.WordInfoState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

@@ -7,6 +7,7 @@ import com.example.dictionary.core.util.Resource
 import com.example.dictionary.domain.model.WordInfo
 import com.example.dictionary.domain.usecase.GetSearchHistoryUseCase
 import com.example.dictionary.domain.usecase.GetWordInfoUsecase
+import com.example.dictionary.presentation.viewmodel.WordInfoViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay

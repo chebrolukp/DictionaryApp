@@ -1,4 +1,4 @@
-package com.example.dictionary.presentation
+package com.example.dictionary.presentation.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

@@ -53,15 +53,15 @@ fun WordInfoItem(
             )
             wordInfo.phonetic?.let {
                 Text(text = it, fontWeight = FontWeight.Light)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = wordInfo.word)
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            wordInfo.phonetics?.forEach{ phonetic ->
+            val phonetic = wordInfo.phonetics?.first()
+            phonetic?.let {
                 Row(Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically){
                     Text(text = phonetic.text)
                     if (phonetic.audio.isNotBlank()) {
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(5.dp))
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                             contentDescription = stringResource(R.string.label_play_audio),

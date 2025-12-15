@@ -55,7 +55,6 @@ class WordInfoRepositoryImplTest {
 
     @Before
     fun setup() = runTest {
-        // Mock entity -> domain conversion
         every { cachedEntity.toWordInfo() } returns cachedWordInfo
 
         coEvery { dao.getWordInfo(sampleWord) } returns listOf(cachedEntity)
@@ -68,7 +67,6 @@ class WordInfoRepositoryImplTest {
         coEvery { networkHelper.isNetworkAvailable() } returns true
         coEvery { api.getWordInfo(sampleWord) } returns listOf(remoteDto)
 
-        // remoteDto -> entity
         val newEntity = mockk<WordInfoEntity>()
         every { newEntity.toWordInfo() } returns cachedWordInfo
 

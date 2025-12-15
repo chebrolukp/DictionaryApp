@@ -52,10 +52,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.dictionary.presentation.AudioPlayerViewModel
+import com.example.dictionary.presentation.viewmodel.AudioPlayerViewModel
 import com.example.dictionary.presentation.HistoryScreen
 import com.example.dictionary.presentation.WordInfoItem
-import com.example.dictionary.presentation.WordInfoViewModel
+import com.example.dictionary.presentation.viewmodel.WordInfoViewModel
 import com.example.dictionary.presentation.navigation.Screen
 import com.example.dictionary.presentation.preview.MultiPreview
 import com.example.dictionary.ui.theme.DictionaryTheme
