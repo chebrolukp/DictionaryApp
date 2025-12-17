@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,19 +49,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.dictionary.presentation.viewmodel.AudioPlayerViewModel
 import com.example.dictionary.presentation.HistoryScreen
 import com.example.dictionary.presentation.WordDetailsScreen
 import com.example.dictionary.presentation.WordInfoItem
-import com.example.dictionary.presentation.viewmodel.WordInfoViewModel
-import com.example.dictionary.presentation.navigation.Screen
+import com.example.dictionary.presentation.navigation.Destination
 import com.example.dictionary.presentation.preview.MultiPreview
+import com.example.dictionary.presentation.viewmodel.AudioPlayerViewModel
+import com.example.dictionary.presentation.viewmodel.WordInfoViewModel
 import com.example.dictionary.ui.theme.DictionaryTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -76,14 +71,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun DictionaryUI() {
         val viewModel: WordInfoViewModel = hiltViewModel()
         val snackBarHostState = remember { SnackbarHostState() }
         val searchQuery by viewModel.searchQuery
-        val navController = rememberNavController()
-        val currentRoute = currentRoute(navController)
+
+        val backStack = remember {
+            mutableStateListOf<Destination>(Destination.Home)
+        }
+        val currentDestination = backStack.last()
+
         LaunchedEffect(key1 = Unit) {
             viewModel.eventFlow.collect { event ->
                 when (event) {
@@ -96,36 +94,29 @@ class MainActivity : ComponentActivity() {
             }
         }
         Scaffold(modifier = Modifier.fillMaxSize(),
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        DictionaryTitle()
-                    }
-                )
-            },
             snackbarHost = {
                 SnackbarHost(snackBarHostState)
             },
             bottomBar = {
-                if (currentRoute == Screen.Home.route ||
-                    currentRoute == Screen.History.route
+                if (currentDestination is Destination.Home ||
+                    currentDestination is Destination.History
                 ) {
                     NavigationBar {
                         NavigationBarItem(
-                            selected = currentRoute == Screen.Home.route,
+                            selected = currentDestination is Destination.Home,
                             onClick = {
-                                navController.navigate(Screen.Home.route) {
-                                    launchSingleTop = true
-                                }
+                                backStack.clear()
+                                backStack.add(Destination.Home)
                             },
                             icon = { Icon(Icons.Default.Home, null) },
                             label = { Text(stringResource(R.string.home)) }
                         )
 
                         NavigationBarItem(
-                            selected = currentRoute == Screen.History.route,
+                            selected = currentDestination is Destination.History,
                             onClick = {
-                                navController.navigate(Screen.History.route)
+                                backStack.clear()
+                                backStack.add(Destination.History)
                             },
                             icon = { Icon(Icons.Default.History, null) },
                             label = { Text(stringResource(R.string.history)) }
@@ -133,51 +124,42 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Home.route,
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                composable(Screen.Home.route) {
-                    WordInfoScreen(
-                        viewModel = viewModel,
-                        searchQuery = searchQuery,
-                        onSearch = viewModel::onSearch
-                    )
-                }
-                composable(Screen.History.route) {
-                    HistoryScreen(
-                        viewModel = viewModel,
-                        onItemClick = {
-                            navController.navigate(Screen.Home.route) {
-                                launchSingleTop = true
+            Box(Modifier.padding(bottom = innerPadding.calculateBottomPadding())) {
+                when (currentDestination) {
+
+                    is Destination.Home -> {
+                        WordInfoScreen(
+                            viewModel = viewModel,
+                            searchQuery = searchQuery,
+                            onSearch = viewModel::onSearch
+                        )
+                    }
+
+                    is Destination.History -> {
+                        HistoryScreen(
+                            viewModel = viewModel,
+                            onItemClick = {
+                                backStack.clear()
+                                backStack.add(Destination.Home)
+                            },
+                            onLocalClick = { word ->
+                                backStack.add(Destination.WordDetails(word))
                             }
-                        },
-                        onLocalClick = { word ->
-                            navController.navigate(Screen.WordDetails.create(word)){
-                                launchSingleTop = true
-                            }
-                        }
-                    )
-                }
-                composable(
-                    route = Screen.WordDetails.route,
-                    arguments = listOf(navArgument("word") { type = NavType.StringType })
-                ) { backStackEntry ->
-                    val word = backStackEntry.arguments?.getString("word") ?: return@composable
-                    WordDetailsScreen(word)
+                        )
+                    }
+
+                    is Destination.WordDetails -> {
+                        WordDetailsScreen(
+                            word = currentDestination.word,
+                            onBack = {
+                                backStack.remove(currentDestination)
+                            })
+                    }
                 }
             }
         }
     }
 }
-
-@Composable
-private fun currentRoute(navController: androidx.navigation.NavHostController): String? {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    return navBackStackEntry?.destination?.route
-}
-
 
 @Composable
 fun DictionaryTitle() {
@@ -209,6 +191,7 @@ fun DictionaryTitle() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WordInfoScreen(
     modifier: Modifier = Modifier,
@@ -222,45 +205,56 @@ fun WordInfoScreen(
     DisposableEffect(Unit) {
         onDispose { audioViewModel.stop() }
     }
-
-    Box(modifier = modifier.fillMaxSize()) {
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    DictionaryTitle()
+                }
             )
-        }
-        Column(modifier = Modifier.fillMaxSize()) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { onSearch(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                placeholder = {
-                    Text(stringResource(R.string.search))
-                },
-                trailingIcon = {
-                    IconButton(onClick = { viewModel.onSearchClick() }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringResource(R.string.search)
-                        )
-                    }
-                },
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Blue,
-                    unfocusedBorderColor = Color.Blue,
+        }) { innerPadding ->
+        Box(modifier = modifier
+            .padding(innerPadding)
+            .fillMaxSize()) {
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
                 )
-            )
-            if (!state.isLoading && state.wordInfoItems.isNotEmpty()) {
-                // Display word info
-                LazyColumn {
-                    items(state.wordInfoItems.size) { index ->
-                        WordInfoItem(state.wordInfoItems[index], modifier = Modifier.padding(16.dp),
-                            onPlayAudio = { audioUrl ->
-                                audioViewModel.play(audioUrl)
-                            })
+            }
+            Column(modifier = Modifier.fillMaxSize()) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { onSearch(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    placeholder = {
+                        Text(stringResource(R.string.search))
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { viewModel.onSearchClick() }) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = stringResource(R.string.search)
+                            )
+                        }
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Blue,
+                        unfocusedBorderColor = Color.Blue,
+                    )
+                )
+                if (!state.isLoading && state.wordInfoItems.isNotEmpty()) {
+                    // Display word info
+                    LazyColumn {
+                        items(state.wordInfoItems.size) { index ->
+                            WordInfoItem(state.wordInfoItems[index],
+                                modifier = Modifier.padding(16.dp),
+                                onPlayAudio = { audioUrl ->
+                                    audioViewModel.play(audioUrl)
+                                })
+                        }
                     }
                 }
             }

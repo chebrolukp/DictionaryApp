@@ -7,3 +7,9 @@ sealed class Screen(val route: String) {
         fun create(word: String) = "word_details/$word"
     }
 }
+
+sealed interface Destination {
+    data object Home : Destination
+    data object History : Destination
+    data class WordDetails(val word: String) : Destination
+}
