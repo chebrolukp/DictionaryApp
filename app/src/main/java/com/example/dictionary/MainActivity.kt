@@ -1,41 +1,31 @@
 package com.example.dictionary
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -47,26 +37,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-<<<<<<< Updated upstream
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-=======
 import com.example.dictionary.presentation.HistoryScreen
-import com.example.dictionary.presentation.WordDetailsScreen
-import com.example.dictionary.presentation.WordInfoItem
 import com.example.dictionary.presentation.WordInfoScreen
 import com.example.dictionary.presentation.navigation.Destination
 import com.example.dictionary.presentation.preview.MultiPreview
->>>>>>> Stashed changes
-import com.example.dictionary.presentation.viewmodel.AudioPlayerViewModel
-import com.example.dictionary.presentation.HistoryScreen
-import com.example.dictionary.presentation.WordInfoItem
 import com.example.dictionary.presentation.viewmodel.WordInfoViewModel
-import com.example.dictionary.presentation.navigation.Screen
-import com.example.dictionary.presentation.preview.MultiPreview
 import com.example.dictionary.ui.theme.DictionaryTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -83,13 +58,15 @@ class MainActivity : ComponentActivity() {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     fun DictionaryUI() {
         val viewModel: WordInfoViewModel = hiltViewModel()
         val snackBarHostState = remember { SnackbarHostState() }
         val searchQuery by viewModel.searchQuery
-        val navController = rememberNavController()
-        val currentRoute = currentRoute(navController)
+        val backstack = remember { mutableStateListOf<Destination>(Destination.Home) }
+        val currentDestination = backstack.last()
+
         LaunchedEffect(key1 = Unit) {
             viewModel.eventFlow.collect { event ->
                 when (event) {
@@ -115,57 +92,50 @@ class MainActivity : ComponentActivity() {
             bottomBar = {
                 NavigationBar {
                     NavigationBarItem(
-                        selected = currentRoute == Screen.Home.route,
+                        selected = currentDestination is Destination.Home,
                         onClick = {
-                            navController.navigate(Screen.Home.route) {
-                                launchSingleTop = true
-                            }
+                            backstack.clear()
+                            backstack.add(Destination.Home)
                         },
                         icon = { Icon(Icons.Default.Home, null) },
                         label = { Text(stringResource(R.string.home)) }
                     )
 
                     NavigationBarItem(
-                        selected = currentRoute == Screen.History.route,
+                        selected = currentDestination is Destination.History,
                         onClick = {
-                            navController.navigate(Screen.History.route)
+                            backstack.clear()
+                            backstack.add(Destination.History)
                         },
                         icon = { Icon(Icons.Default.History, null) },
                         label = { Text(stringResource(R.string.history)) }
                     )
                 }
-            }) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Home.route,
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                composable(Screen.Home.route) {
-                    WordInfoScreen(
-                        viewModel = viewModel,
-                        searchQuery = searchQuery,
-                        onSearch = viewModel::onSearch
-                    )
-                }
-                composable(Screen.History.route) {
-                    HistoryScreen(
-                        viewModel = viewModel,
-                        onItemClick = {
-                            navController.navigate(Screen.Home.route) {
-                                launchSingleTop = true
+            }) { _ ->
+            Box(Modifier.padding(10.dp)) {
+                when (currentDestination) {
+
+                    is Destination.Home -> {
+                        WordInfoScreen(
+                            viewModel = viewModel,
+                            searchQuery = searchQuery,
+                            onSearch = viewModel::onSearch
+                        )
+                    }
+
+                    is Destination.History -> {
+                        HistoryScreen(
+                            viewModel = viewModel,
+                            onItemClick = {
+                                backstack.clear()
+                                backstack.add(Destination.History)
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun currentRoute(navController: androidx.navigation.NavHostController): String? {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    return navBackStackEntry?.destination?.route
 }
 
 
@@ -199,68 +169,7 @@ fun DictionaryTitle() {
     )
 }
 
-<<<<<<< Updated upstream
-@Composable
-fun WordInfoScreen(
-    modifier: Modifier = Modifier,
-    viewModel: WordInfoViewModel,
-    searchQuery: String = "",
-    onSearch: (String) -> Unit = {}
-) {
-    val audioViewModel: AudioPlayerViewModel = hiltViewModel()
-    val state = viewModel.state.collectAsStateWithLifecycle().value
-    // Stop audio when leaving the screen
-    DisposableEffect(Unit) {
-        onDispose { audioViewModel.stop() }
-    }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-            )
-        }
-        Column(modifier = Modifier.fillMaxSize()) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { onSearch(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                placeholder = {
-                    Text(stringResource(R.string.search))
-                },
-                trailingIcon = {
-                    IconButton(onClick = { viewModel.onSearchClick() }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringResource(R.string.search)
-                        )
-                    }
-                },
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Blue,
-                    unfocusedBorderColor = Color.Blue,
-                )
-            )
-            if (!state.isLoading && state.wordInfoItems.isNotEmpty()) {
-                // Display word info
-                LazyColumn {
-                    items(state.wordInfoItems.size) { index ->
-                        WordInfoItem(state.wordInfoItems[index], modifier = Modifier.padding(16.dp),
-                            onPlayAudio = { audioUrl ->
-                                audioViewModel.play(audioUrl)
-                            })
-                    }
-                }
-            }
-        }
-    }
-}
-
-=======
->>>>>>> Stashed changes
 @MultiPreview
 @Composable
 fun DictionaryTitlePreview(){
