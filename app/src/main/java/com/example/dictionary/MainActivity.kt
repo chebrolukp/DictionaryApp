@@ -1,6 +1,5 @@
 package com.example.dictionary
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,7 +33,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.dictionary.presentation.HistoryScreen
@@ -58,7 +56,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     fun DictionaryUI() {
         val viewModel: WordInfoViewModel = hiltViewModel()
@@ -104,15 +101,14 @@ class MainActivity : ComponentActivity() {
                     NavigationBarItem(
                         selected = currentDestination is Destination.History,
                         onClick = {
-                            backstack.clear()
                             backstack.add(Destination.History)
                         },
                         icon = { Icon(Icons.Default.History, null) },
                         label = { Text(stringResource(R.string.history)) }
                     )
                 }
-            }) { _ ->
-            Box(Modifier.padding(10.dp)) {
+            }) { innerPadding ->
+            Box(Modifier.padding(bottom = innerPadding.calculateBottomPadding())) {
                 when (currentDestination) {
 
                     is Destination.Home -> {
@@ -127,7 +123,6 @@ class MainActivity : ComponentActivity() {
                         HistoryScreen(
                             viewModel = viewModel,
                             onItemClick = {
-                                backstack.clear()
                                 backstack.add(Destination.History)
                             }
                         )
