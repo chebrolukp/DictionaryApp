@@ -48,10 +48,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+<<<<<<< Updated upstream
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+=======
+import com.example.dictionary.presentation.HistoryScreen
+import com.example.dictionary.presentation.WordDetailsScreen
+import com.example.dictionary.presentation.WordInfoItem
+import com.example.dictionary.presentation.WordInfoScreen
+import com.example.dictionary.presentation.navigation.Destination
+import com.example.dictionary.presentation.preview.MultiPreview
+>>>>>>> Stashed changes
 import com.example.dictionary.presentation.viewmodel.AudioPlayerViewModel
 import com.example.dictionary.presentation.HistoryScreen
 import com.example.dictionary.presentation.WordInfoItem
@@ -190,6 +199,7 @@ fun DictionaryTitle() {
     )
 }
 
+<<<<<<< Updated upstream
 @Composable
 fun WordInfoScreen(
     modifier: Modifier = Modifier,
@@ -249,6 +259,8 @@ fun WordInfoScreen(
     }
 }
 
+=======
+>>>>>>> Stashed changes
 @MultiPreview
 @Composable
 fun DictionaryTitlePreview(){
